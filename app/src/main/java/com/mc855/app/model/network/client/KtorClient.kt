@@ -1,4 +1,4 @@
-package com.mc855.app.network.client
+package com.mc855.app.model.network.client
 
 import android.util.Log
 import io.ktor.client.*
@@ -36,7 +36,5 @@ object KtorClient {
 		install(DefaultRequest) {
 			header(HttpHeaders.ContentType, ContentType.Application.Json)
 		}
-
-
 	}
 }
