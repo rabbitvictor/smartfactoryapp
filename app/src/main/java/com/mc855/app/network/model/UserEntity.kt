@@ -1,10 +1,8 @@
-package com.mc855.app.http.model
+package com.mc855.app.network.model
 
-import com.mc855.app.http.client.KtorClient
-import io.ktor.client.*
+import com.mc855.app.network.client.KtorClient
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,4 +1,4 @@
-package com.mc855.app.http.client
+package com.mc855.app.network.client
 
 import android.util.Log
 import io.ktor.client.*
