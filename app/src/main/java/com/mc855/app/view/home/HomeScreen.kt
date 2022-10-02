@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,28 +36,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mc855.app.model.network.model.UserEntity
+import com.mc855.app.model.network.model.SensorEntity
 import com.mc855.app.view.destinations.SensorScreenDestination
 import com.mc855.app.viewmodel.HomeViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@RootNavGraph(start = true)
-@Destination()
+@Destination
 @Composable
 fun HomeScaffold(navController: DestinationsNavigator) {
 	val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 	val coroutineScope = rememberCoroutineScope()
-	Scaffold(
-		scaffoldState = scaffoldState,
-		topBar = { TopAppBar(coroutineScope, scaffoldState) },
-		drawerContent = { Drawer() }
-	) { contentPadding ->
-		HomeScreenList(contentPadding, navController)
+	Surface(
+		modifier = Modifier
+			.fillMaxWidth()
+			.fillMaxHeight(),
+		color = MaterialTheme.colors.background
+	) {
+		Scaffold(
+			scaffoldState = scaffoldState,
+			topBar = { TopAppBar(coroutineScope, scaffoldState) },
+			drawerContent = { Drawer() }
+		) { contentPadding ->
+			HomeScreenList(contentPadding, navController)
+		}
 	}
 }
 
@@ -111,20 +117,20 @@ private fun HomeScreenList(
 	homeViewModel: HomeViewModel = HomeViewModel()
 ) {
 	when (val state = homeViewModel.uiState.collectAsState().value) {
-		is HomeViewModel.HomeViewState.Empty -> UsersListComposable(
+		is HomeViewModel.HomeViewState.Empty -> SensorsListComposable(
 			contentPadding,
 			emptyList(),
 			navController
 		)
-		is HomeViewModel.HomeViewState.Loading -> UsersListComposable(
+		is HomeViewModel.HomeViewState.Loading -> SensorsListComposable(
 			contentPadding,
 			emptyList(),
 			navController
 		)
-		is HomeViewModel.HomeViewState.UsersListLoadFailure -> ErrorDialog(message = state.message)
-		is HomeViewModel.HomeViewState.UsersListLoaded -> UsersListComposable(
+		is HomeViewModel.HomeViewState.SensorsListFailure -> ErrorDialog(message = state.message)
+		is HomeViewModel.HomeViewState.SensorsListLoaded -> SensorsListComposable(
 			contentPadding = contentPadding,
-			users = state.usersList,
+			sensorsList = state.usersList,
 			navController
 		)
 	}
@@ -165,9 +171,9 @@ private fun ErrorDialog(message: String?) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun UsersListComposable(
+private fun SensorsListComposable(
 	contentPadding: PaddingValues,
-	users: List<UserEntity>,
+	sensorsList: List<SensorEntity>,
 	navController: DestinationsNavigator
 ) {
 	LazyColumn(
@@ -175,27 +181,27 @@ private fun UsersListComposable(
 		contentPadding = contentPadding,
 		verticalArrangement = Arrangement.spacedBy(10.dp)
 	) {
-		items(users) { user ->
+		items(sensorsList) { sensor ->
 			Surface(
 				elevation = 10.dp
 			) {
 				ListItem(
 					text = {
-						Text(user.title)
+						Text(sensor.sensorName)
 					},
 					secondaryText = {
-						Text(user.id)
+						Text(sensor.id.toString())
 					},
 					icon = {
 						Icon(
 							Icons.Filled.Lens,
 							contentDescription = null,
 							modifier = Modifier.size(56.dp),
-							tint = chooseColor(user.completed),
+							tint = chooseColor(sensor.hasExceededLimit),
 						)
 					},
 					modifier = Modifier.clickable {
-						navController.navigate(SensorScreenDestination(user))
+						navController.navigate(SensorScreenDestination(sensor))
 					}
 				)
 			}
