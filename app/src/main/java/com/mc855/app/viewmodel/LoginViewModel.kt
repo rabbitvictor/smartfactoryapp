@@ -1,9 +1,10 @@
 package com.mc855.app.viewmodel
 
+import com.mc855.app.model.data.tables.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class LoginViewModel() {
+class LoginViewModel(val database: AppDatabase) {
 
 	private val _uiState = MutableStateFlow<LoginViewState>(LoginViewState.NotLoggedIn)
 	val uiState: StateFlow<LoginViewState> = _uiState

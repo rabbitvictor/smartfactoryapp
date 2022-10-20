@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.mc855.app.view.destinations.HomeScaffoldDestination
+import com.mc855.app.viewmodel.LoginViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -36,7 +37,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun LoginScreen(navController: DestinationsNavigator) {
+fun LoginScreen(navController: DestinationsNavigator, loginViewModel: LoginViewModel) {
 	Surface(
 		modifier = Modifier
 			.fillMaxWidth()

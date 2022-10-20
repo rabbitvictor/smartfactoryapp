@@ -47,7 +47,10 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun HomeScaffold(navController: DestinationsNavigator) {
+fun HomeScaffold(
+	navController: DestinationsNavigator,
+	homeViewModel: HomeViewModel,
+) {
 	val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 	val coroutineScope = rememberCoroutineScope()
 	Surface(
@@ -61,7 +64,7 @@ fun HomeScaffold(navController: DestinationsNavigator) {
 			topBar = { TopAppBar(coroutineScope, scaffoldState) },
 			drawerContent = { Drawer() }
 		) { contentPadding ->
-			HomeScreenList(contentPadding, navController)
+			HomeScreenList(contentPadding, navController, homeViewModel)
 		}
 	}
 }
@@ -114,8 +117,9 @@ private fun TopAppBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
 private fun HomeScreenList(
 	contentPadding: PaddingValues,
 	navController: DestinationsNavigator,
-	homeViewModel: HomeViewModel = HomeViewModel()
+	homeViewModel: HomeViewModel
 ) {
+	homeViewModel.testDb()
 	when (val state = homeViewModel.uiState.collectAsState().value) {
 		is HomeViewModel.HomeViewState.Empty -> SensorsListComposable(
 			contentPadding,
@@ -133,6 +137,12 @@ private fun HomeScreenList(
 			sensorsList = state.usersList,
 			navController
 		)
+
+		is HomeViewModel.HomeViewState.DbTesteSuccess -> {
+			state.groupList.forEach {
+				println(it)
+			}
+		}
 	}
 }
 
