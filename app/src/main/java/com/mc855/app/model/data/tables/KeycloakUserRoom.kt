@@ -6,12 +6,11 @@ import com.mc855.app.model.utils.KC_USER_TABLE
 
 @Entity(tableName = KC_USER_TABLE)
 data class KeycloakUserRoom(
-	@PrimaryKey(autoGenerate = true) val id: Int,
+	@PrimaryKey(autoGenerate = true) val id: Int = 0,
 	val kcId: String,
 	val username: String,
 	val firstName: String?,
 	val lastName: String?,
-	val createdTimestap: Int,
 	val groups: String,
 	val token: String
 )

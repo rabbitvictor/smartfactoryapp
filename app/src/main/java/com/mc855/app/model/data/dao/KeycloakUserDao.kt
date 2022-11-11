@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.IGNORE
+import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.mc855.app.model.data.tables.KeycloakUserRoom
@@ -15,7 +16,7 @@ interface KeycloakUserDao {
 	@Query("SELECT * FROM $KC_USER_TABLE WHERE kcId = :kcId")
 	fun getUser(kcId: String): Flow<KeycloakUserRoom>
 
-	@Insert(onConflict = IGNORE)
+	@Insert(onConflict = REPLACE)
 	fun insertUser(keycloakUser: KeycloakUserRoom)
 
 	@Update

@@ -10,7 +10,7 @@ import com.mc855.app.model.utils.DB_NAME
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [KeycloakUserRoom::class, KeycloakGroupRoom::class], version = 1, exportSchema = false)
+@Database(entities = [KeycloakUserRoom::class, KeycloakGroupRoom::class], version = 3, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
 	abstract fun keycloakUserDao(): KeycloakUserDao
 	abstract fun keycloakGroupDao(): KeycloakGroupDao
@@ -28,7 +28,7 @@ abstract class AppDatabase: RoomDatabase() {
 					context.applicationContext,
 					AppDatabase::class.java,
 					DB_NAME
-				).build()
+				).fallbackToDestructiveMigration().build()
 
 				INSTANCE = instance
 				return instance
