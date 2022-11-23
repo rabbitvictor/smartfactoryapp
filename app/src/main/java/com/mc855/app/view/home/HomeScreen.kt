@@ -131,7 +131,7 @@ private fun HomeScreenList(
 			emptyList(),
 			navController
 		)
-		is HomeViewModel.HomeViewState.SensorsListFailure -> ErrorDialog(message = state.message)
+		is HomeViewModel.HomeViewState.SensorsListFailure -> errorDialog(message = state.message)
 		is HomeViewModel.HomeViewState.SensorsListLoaded -> SensorsListComposable(
 			contentPadding = contentPadding,
 			sensorsList = state.usersList,
@@ -147,7 +147,7 @@ private fun HomeScreenList(
 }
 
 @Composable
-private fun ErrorDialog(message: String?) {
+private fun errorDialog(message: String?) {
 	val openDialog = remember { mutableStateOf(true) }
 	if (openDialog.value) {
 		AlertDialog(
