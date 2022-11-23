@@ -27,6 +27,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lens
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -37,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mc855.app.model.network.model.SensorEntity
+import com.mc855.app.model.network.model.SensorInfoEntity
+import com.mc855.app.model.network.model.hasExceededLimit
 import com.mc855.app.view.destinations.SensorScreenDestination
 import com.mc855.app.viewmodel.HomeViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -62,7 +65,9 @@ fun HomeScaffold(
 		Scaffold(
 			scaffoldState = scaffoldState,
 			topBar = { TopAppBar(coroutineScope, scaffoldState) },
-			drawerContent = { Drawer() }
+//			drawerContent = { Drawer() },
+			floatingActionButton = { FloatingActionButton(coroutineScope, scaffoldState, homeViewModel) },
+			isFloatingActionButtonDocked = true
 		) { contentPadding ->
 			HomeScreenList(contentPadding, navController, homeViewModel)
 		}
@@ -72,22 +77,15 @@ fun HomeScaffold(
 @Composable
 private fun FloatingActionButton(
 	coroutineScope: CoroutineScope,
-	scaffoldState: ScaffoldState
+	scaffoldState: ScaffoldState,
+	homeViewModel: HomeViewModel,
 ) {
 	androidx.compose.material.FloatingActionButton(
 		onClick = {
-			coroutineScope.launch {
-				when (scaffoldState.snackbarHostState.showSnackbar(
-					message = "Snack Bar",
-					actionLabel = "Dismiss"
-				)) {
-					SnackbarResult.ActionPerformed -> TODO()
-					SnackbarResult.Dismissed -> TODO()
-				}
-			}
+			homeViewModel.fetchSensorInfo()
 		},
 	) {
-		Icon(Icons.Filled.Add, "")
+		Icon(Icons.Filled.Refresh, "")
 	}
 }
 
@@ -119,30 +117,26 @@ private fun HomeScreenList(
 	navController: DestinationsNavigator,
 	homeViewModel: HomeViewModel
 ) {
-	homeViewModel.testDb()
 	when (val state = homeViewModel.uiState.collectAsState().value) {
-		is HomeViewModel.HomeViewState.Empty -> SensorsListComposable(
-			contentPadding,
-			emptyList(),
-			navController
-		)
-		is HomeViewModel.HomeViewState.Loading -> SensorsListComposable(
-			contentPadding,
-			emptyList(),
-			navController
-		)
-		is HomeViewModel.HomeViewState.SensorsListFailure -> errorDialog(message = state.message)
-		is HomeViewModel.HomeViewState.SensorsListLoaded -> SensorsListComposable(
+		is HomeViewModel.HomeViewState.SensorsInfoListLoaded -> SensorsListComposable(
 			contentPadding = contentPadding,
-			sensorsList = state.usersList,
+			sensorsList = state.list,
 			navController
 		)
 
+		is HomeViewModel.HomeViewState.Empty, is HomeViewModel.HomeViewState.Loading -> SensorsListComposable(
+			contentPadding,
+			emptyList(),
+			navController
+		)
+
+		is HomeViewModel.HomeViewState.SensorsListFailure -> errorDialog(message = state.message)
 		is HomeViewModel.HomeViewState.DbTesteSuccess -> {
 			state.groupList.forEach {
 				println(it)
 			}
 		}
+
 	}
 }
 
@@ -183,7 +177,7 @@ private fun errorDialog(message: String?) {
 @Composable
 private fun SensorsListComposable(
 	contentPadding: PaddingValues,
-	sensorsList: List<SensorEntity>,
+	sensorsList: List<SensorInfoEntity>,
 	navController: DestinationsNavigator
 ) {
 	LazyColumn(
@@ -197,17 +191,14 @@ private fun SensorsListComposable(
 			) {
 				ListItem(
 					text = {
-						Text(sensor.sensorName)
-					},
-					secondaryText = {
-						Text(sensor.id.toString())
+						Text(sensor.name)
 					},
 					icon = {
 						Icon(
 							Icons.Filled.Lens,
 							contentDescription = null,
 							modifier = Modifier.size(56.dp),
-							tint = chooseColor(sensor.hasExceededLimit),
+							tint = chooseColor(sensor.hasExceededLimit()),
 						)
 					},
 					modifier = Modifier.clickable {

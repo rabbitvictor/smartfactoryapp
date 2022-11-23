@@ -5,7 +5,8 @@ import com.mc855.app.model.data.tables.KeycloakUserRoom
 import kotlinx.coroutines.flow.Flow
 
 interface KeycloakUserRepository {
-	suspend fun getUser(kcId: String): Flow<KeycloakUserRoom>
+	fun getUser(kcId: String): KeycloakUserRoom
+	fun getAllUsers(): List<KeycloakUserRoom>
 	suspend fun insertUser(keycloakUser: KeycloakUserRoom)
 	suspend fun updateUser(keycloakUser: KeycloakUserRoom)
 	suspend fun deleteUser(keycloakUser: KeycloakUserRoom)
@@ -13,7 +14,8 @@ interface KeycloakUserRepository {
 
 
 class KeycloakUserRepositoryImpl(val kcUserDao: KeycloakUserDao) : KeycloakUserRepository {
-	override suspend fun getUser(kcId: String) = kcUserDao.getUser(kcId)
+	override fun getUser(kcId: String) = kcUserDao.getUser(kcId)
+	override fun getAllUsers() = kcUserDao.getAllUsers()
 
 	override suspend fun insertUser(keycloakUser: KeycloakUserRoom) =
 		kcUserDao.insertUser(keycloakUser)

@@ -14,7 +14,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface KeycloakUserDao {
 	@Query("SELECT * FROM $KC_USER_TABLE WHERE kcId = :kcId")
-	fun getUser(kcId: String): Flow<KeycloakUserRoom>
+	fun getUser(kcId: String): KeycloakUserRoom
+
+	@Query("SELECT * FROM $KC_USER_TABLE")
+	fun getAllUsers(): List<KeycloakUserRoom>
 
 	@Insert(onConflict = REPLACE)
 	fun insertUser(keycloakUser: KeycloakUserRoom)
